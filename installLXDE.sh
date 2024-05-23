@@ -1,12 +1,17 @@
 #!/bin/bash
 # Install LXDE (Lightweight Desktop Environment) on a NVIDIA Jetson Developer Kit
 # Install the LightDM desktop manager
-# Use Compton desktop compositor 
+# Use Compton desktop compositor
 sudo apt-get update
 # Use the interactive version
 sudo apt-get install lightdm -y
 # This is the command for the noninteractive version
-# sudo DEBIAN_FRONTEND=noninteractive apt-get install lightdm -y
+sudo DEBIAN_FRONTEND=noninteractive apt-get install lightdm -y
+
+# Set lightdm as the default display manager
+echo "/usr/sbin/lightdm" | sudo tee /etc/X11/default-display-manager
+sudo debconf-set-selections <<< "lightdm lightdm/default-display-manager select /usr/sbin/lightdm"
+
 sudo apt-get install lxde compton -y
 
 # Write the following text to the file /etc/xdg/autostart/lxde-compton.desktop
@@ -22,15 +27,6 @@ Exec=compton --backend glx -b
 OnlyShowIn=LXDE
 EOF
 
-# Use the lightdm desktop manager instead of gdm3
-# lxde works with either lightdm or gdm3; If you want to use only gdm3
-# This does not seem to persist correctly
-# sudo debconf-set-selections <<< "lightdm shared/default-x-display-manager select lightdm"
-
-# You can manually change desktop managers using:
-# sudo dpkg-reconfigure lightdm
-#
-
 # Also, put a LXTerminal shortcut on the desktop
 cp lxterminal.desktop ~/Desktop/lxterminal.desktop
 
@@ -38,4 +34,3 @@ echo
 echo
 echo 'Reboot for changes to take effect.'
 echo 'After reboot, make sure that LXDE is checked when logging in.'
-
